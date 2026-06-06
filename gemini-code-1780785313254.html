@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Family World Cup Sweepstake</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-color: #151f32;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f97316;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .update-badge {
+            display: inline-block;
+            background-color: #1e293b;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 0.75rem;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1100px) {
+            .container { grid-template-columns: 1.2fr 2fr; }
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.35rem;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.6rem 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            text-align: left;
+        }
+
+        td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+
+        .teams-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            max-width: 320px;
+        }
+
+        .team-badge {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .prizes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        @media (min-width: 500px) {
+            .prizes-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .prize-item {
+            background-color: #1e293b;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .prize-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .prize-winner {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .prize-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .group-card {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .group-card h3 {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.25rem;
+        }
+
+        .owner-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: normal;
+            margin-left: 0.35rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏆 Family World Cup Sweepstake</h1>
+        <div class="update-badge">📅 Last Updated: <span id="lastUpdatedTime">Loading...</span></div>
+    </header>
+
+    <div class="container">
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div class="card">
+                <h2>Sweepstake Standings</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Pos</th>
+                            <th>Member & Allocated Teams</th>
+                            <th class="text-right" style="width: 80px;">Total Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Tournament Special Prizes</h2>
+                <div class="prizes-grid">
+                    <div class="prize-item">
+                        <div class="prize-title">🥄 Wooden Spoon</div>
+                        <div class="prize-winner" id="woodenSpoonWinner">-</div>
+                        <div class="prize-desc" id="woodenSpoonDesc">Bottom overall team</div>
+                    </div>
+                    <div class="prize-item">
+                        <div class="prize-title">⚔️ Giant Killer</div>
+                        <div class="prize-winner" id="giantKillerWinner">-</div>
+                        <div class="prize-desc" id="giantKillerDesc">Biggest ranking upset</div>
+                    </div>
+                    <div class="prize-item">
+                        <div class="prize-title">🌋 Goal Avalanche</div>
+                        <div class="prize-winner" id="goalAvalancheWinner">-</div>
+                        <div class="prize-desc" id="goalAvalancheDesc">Most goals in 1 match</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Group Standings Center</h2>
+            <div class="groups-grid" id="groupsContainer">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. DATA ALLOCATIONS & SHEET 2 RANKINGS ---
+        const familyAllocations = {
+            "France": "Nana", "Morocco": "Nana", "Australia": "Nana", "Iran": "Nana",
+            "Brazil": "Grandad", "United States": "Grandad", "Scotland": "Grandad", "Qatar": "Grandad",
+            "Argentina": "Cian", "Japan": "Cian", "Czechia": "Cian", "South Africa": "Cian",
+            "England": "Cormac", "Switzerland": "Cormac", "Algeria": "Cormac", "Iraq": "Cormac",
+            "Spain": "Patrick", "Austria": "Patrick", "Ivory Coast": "Patrick", "Uzbekistan": "Patrick",
+            "Portugal": "Cara", "Sweden": "Cara", "Egypt": "Cara", "Cape Verde": "Cara",
+            "Germany": "Eoin", "Norway": "Eoin", "Tunisia": "Eoin", "DR Congo": "Eoin",
+            "Netherlands": "Niamh", "Turkey": "Niamh", "Ghana": "Niamh", "Panama": "Niamh",
+            "Belgium": "Kevin", "Mexico": "Kevin", "Paraguay": "Kevin", "New Zealand": "Kevin",
+            "Uruguay": "Niall", "Ecuador": "Niall", "Bosnia & Herz.": "Niall", "Jordan": "Niall",
+            "Croatia": "Roisin", "Senegal": "Roisin", "Canada": "Roisin", "Haiti": "Roisin",
+            "Colombia": "Mary", "South Korea": "Mary", "Saudi Arabia": "Mary", "Curacao": "Mary"
+        };
+
+        const teamRankings = {
+            "France": 1, "Brazil": 2, "Argentina": 3, "England": 4, "Spain": 5, "Portugal": 6, "Germany": 7, "Netherlands": 8,
+            "Belgium": 9, "Uruguay": 10, "Croatia": 11, "Colombia": 12, "Morocco": 13, "United States": 14, "Japan": 15, "Switzerland": 16,
+            "Austria": 17, "Sweden": 18, "Norway": 19, "Turkey": 20, "Mexico": 21, "Ecuador": 22, "Senegal": 23, "South Korea": 24,
+            "Australia": 25, "Scotland": 26, "Czechia": 27, "Algeria": 28, "Ivory Coast": 29, "Egypt": 30, "Tunisia": 31, "Ghana": 32,
+            "Paraguay": 33, "Bosnia & Herz.": 34, "Canada": 35, "Saudi Arabia": 36, "Iran": 37, "Qatar": 38, "South Africa": 39, "Iraq": 40,
+            "Uzbekistan": 41, "Cape Verde": 42, "DR Congo": 43, "Panama": 44, "New Zealand": 45, "Jordan": 46, "Haiti": 47, "Curacao": 48
+        };
+
+        const personToTeamsMap = {};
+        Object.entries(familyAllocations).forEach(([team, person]) => {
+            if (!personToTeamsMap[person]) personToTeamsMap[person] = [];
+            personToTeamsMap[person].push(team);
+        });
+
+        // FULL MATCH FEED FROM SPREADSHEET 1
+        const rawMatches = [
+          { "id": 1, "stage": "Group Stage", "group": "Group A", "home": "Mexico", "hScore": 7, "aScore": 0, "away": "South Africa" },
+          { "id": 2, "stage": "Group Stage", "group": "Group A", "home": "South Korea", "hScore": 1, "aScore": 1, "away": "Czechia" },
+          { "id": 3, "stage": "Group Stage", "group": "Group B", "home": "Canada", "hScore": 1, "aScore": 4, "away": "Bosnia & Herz." },
+          { "id": 4, "stage": "Group Stage", "group": "Group B", "home": "Switzerland", "hScore": 0, "aScore": 1, "away": "Qatar" },
+          { "id": 5, "stage": "Group Stage", "group": "Group C", "home": "Brazil", "hScore": null, "aScore": null, "away": "Haiti" },
+          { "id": 6, "stage": "Group Stage", "group": "Group C", "home": "Scotland", "hScore": null, "aScore": null, "away": "Morocco" },
+          { "id": 7, "stage": "Group Stage", "group": "Group D", "home": "United States", "hScore": null, "aScore": null, "away": "Paraguay" },
+          { "id": 8, "stage": "Group Stage", "group": "Group D", "home": "Turkey", "hScore": null, "aScore": null, "away": "Australia" },
+          { "id": 9, "stage": "Group Stage", "group": "Group E", "home": "Germany", "hScore": null, "aScore": null, "away": "Curacao" },
+          { "id": 10, "stage": "Group Stage", "group": "Group E", "home": "Ecuador", "hScore": null, "aScore": null, "away": "Ivory Coast" },
+          { "id": 11, "stage": "Group Stage", "group": "Group F", "home": "Netherlands", "hScore": null, "aScore": null, "away": "Japan" },
+          { "id": 12, "stage": "Group Stage", "group": "Group F", "home": "Sweden", "hScore": null, "aScore": null, "away": "Tunisia" },
+          { "id": 13, "stage": "Group Stage", "group": "Group G", "home": "Belgium", "hScore": null, "aScore": null, "away": "Egypt" },
+          { "id": 14, "stage": "Group Stage", "group": "Group G", "home": "New Zealand", "hScore": null, "aScore": null, "away": "Iran" },
+          { "id": 15, "stage": "Group Stage", "group": "Group H", "home": "Spain", "hScore": null, "aScore": null, "away": "Cape Verde" },
+          { "id": 16, "stage": "Group Stage", "group": "Group H", "home": "Uruguay", "hScore": null, "aScore": null, "away": "Saudi Arabia" },
+          { "id": 17, "stage": "Group Stage", "group": "Group I", "home": "France", "hScore": null, "aScore": null, "away": "Senegal" },
+          { "id": 18, "stage": "Group Stage", "group": "Group I", "home": "Norway", "hScore": null, "aScore": null, "away": "Iraq" },
+          { "id": 19, "stage": "Group Stage", "group": "Group J", "home": "Argentina", "hScore": null, "aScore": null, "away": "Algeria" },
+          { "id": 20, "stage": "Group Stage", "group": "Group J", "home": "Austria", "hScore": null, "aScore": null, "away": "Jordan" },
+          { "id": 21, "stage": "Group Stage", "group": "Group K", "home": "Portugal", "hScore": null, "aScore": null, "away": "DR Congo" },
+          { "id": 22, "stage": "Group Stage", "group": "Group K", "home": "Colombia", "hScore": null, "aScore": null, "away": "Uzbekistan" },
+          { "id": 23, "stage": "Group Stage", "group": "Group L", "home": "England", "hScore": null, "aScore": null, "away": "Croatia" },
+          { "id": 24, "stage": "Group Stage", "group": "Group L", "home": "Panama", "hScore": null, "aScore": null, "away": "Ghana" },
+          { "id": 25, "stage": "Group Stage", "group": "Group A", "home": "Mexico", "hScore": null, "aScore": null, "away": "South Korea" },
+          { "id": 26, "stage": "Group Stage", "group": "Group A", "home": "South Africa", "hScore": null, "aScore": null, "away": "Czechia" },
+          { "id": 27, "stage": "Group Stage", "group": "Group B", "home": "Canada", "hScore": null, "aScore": null, "away": "Switzerland" },
+          { "id": 28, "stage": "Group Stage", "group": "Group B", "home": "Bosnia & Herz.", "hScore": null, "aScore": null, "away": "Qatar" },
+          { "id": 29, "stage": "Group Stage", "group": "Group C", "home": "Brazil", "hScore": null, "aScore": null, "away": "Scotland" },
+          { "id": 30, "stage": "Group Stage", "group": "Group C", "home": "Haiti", "hScore": null, "aScore": null, "away": "Morocco" },
+          { "id": 31, "stage": "Group Stage", "group": "Group D", "home": "United States", "hScore": null, "aScore": null, "away": "Turkey" },
+          { "id": 32, "stage": "Group Stage", "group": "Group D", "home": "Paraguay", "hScore": null, "aScore": null, "away": "Australia" },
+          { "id": 33, "stage": "Group Stage", "group": "Group E", "home": "Germany", "hScore": null, "aScore": null, "away": "Ecuador" },
+          { "id": 34, "stage": "Group Stage", "group": "Group E", "home": "Curacao", "hScore": null, "aScore": null, "away": "Ivory Coast" },
+          { "id": 35, "stage": "Group Stage", "group": "Group F", "home": "Netherlands", "hScore": null, "aScore": null, "away": "Sweden" },
+          { "id": 36, "stage": "Group Stage", "group": "Group F", "home": "Japan", "hScore": null, "aScore": null, "away": "Tunisia" },
+          { "id": 37, "stage": "Group Stage", "group": "Group G", "home": "Belgium", "hScore": null, "aScore": null, "away": "New Zealand" },
+          { "id": 38, "stage": "Group Stage", "group": "Group G", "home": "Egypt", "hScore": null, "aScore": null, "away": "Iran" },
+          { "id": 39, "stage": "Group Stage", "group": "Group H", "home": "Spain", "hScore": null, "aScore": null, "away": "Uruguay" },
+          { "id": 40, "stage": "Group Stage", "group": "Group H", "home": "Cape Verde", "hScore": null, "aScore": null, "away": "Saudi Arabia" },
+          { "id": 41, "stage": "Group Stage", "group": "Group I", "home": "France", "hScore": null, "aScore": null, "away": "Norway" },
+          { "id": 42, "stage": "Group Stage", "group": "Group I", "home": "Senegal", "hScore": null, "aScore": null, "away": "Iraq" },
+          { "id": 43, "stage": "Group Stage", "group": "Group J", "home": "Argentina", "hScore": null, "aScore": null, "away": "Austria" },
+          { "id": 44, "stage": "Group Stage", "group": "Group J", "home": "Algeria", "hScore": null, "aScore": null, "away": "Jordan" },
+          { "id": 45, "stage": "Group Stage", "group": "Group K", "home": "Portugal", "hScore": null, "aScore": null, "away": "Colombia" },
+          { "id": 46, "stage": "Group Stage", "group": "Group K", "home": "DR Congo", "hScore": null, "aScore": null, "away": "Uzbekistan" },
+          { "id": 47, "stage": "Group Stage", "group": "Group L", "home": "England", "hScore": null, "aScore": null, "away": "Panama" },
+          { "id": 48, "stage": "Group Stage", "group": "Group L", "home": "Croatia", "hScore": null, "aScore": null, "away": "Ghana" },
+          { "id": 49, "stage": "Group Stage", "group": "Group A", "home": "Czechia", "hScore": null, "aScore": null, "away": "Mexico" },
+          { "id": 50, "stage": "Group Stage", "group": "Group A", "home": "South Africa", "hScore": null, "aScore": null, "away": "South Korea" },
+          { "id": 51, "stage": "Group Stage", "group": "Group B", "home": "Qatar", "hScore": null, "aScore": null, "away": "Canada" },
+          { "id": 52, "stage": "Group Stage", "group": "Group B", "home": "Bosnia & Herz.", "hScore": null, "aScore": null, "away": "Switzerland" },
+          { "id": 53, "stage": "Group Stage", "group": "Group C", "home": "Morocco", "hScore": null, "aScore": null, "away": "Brazil" },
+          { "id": 54, "stage": "Group Stage", "group": "Group C", "home": "Haiti", "hScore": null, "aScore": null, "away": "Scotland" },
+          { "id": 55, "stage": "Group Stage", "group": "Group D", "home": "Australia", "hScore": null, "aScore": null, "away": "United States" },
+          { "id": 56, "stage": "Group Stage", "group": "Group D", "home": "Paraguay", "hScore": null, "aScore": null, "away": "Turkey" },
+          { "id": 57, "stage": "Group Stage", "group": "Group E", "home": "Ivory Coast", "hScore": null, "aScore": null, "away": "Germany" },
+          { "id": 58, "stage": "Group Stage", "group": "Group E", "home": "Curacao", "hScore": null, "aScore": null, "away": "Ecuador" },
+          { "id": 59, "stage": "Group Stage", "group": "Group F", "home": "Tunisia", "hScore": null, "aScore": null, "away": "Netherlands" },
+          { "id": 60, "stage": "Group Stage", "group": "Group F", "home": "Japan", "hScore": null, "aScore": null, "away": "Sweden" },
+          { "id": 61, "stage": "Group Stage", "group": "Group G", "home": "Iran", "hScore": null, "aScore": null, "away": "Belgium" },
+          { "id": 62, "stage": "Group Stage", "group": "Group G", "home": "Egypt", "hScore": null, "aScore": null, "away": "New Zealand" },
+          { "id": 63, "stage": "Group Stage", "group": "Group H", "home": "Saudi Arabia", "hScore": null, "aScore": null, "away": "Spain" },
+          { "id": 64, "stage": "Group Stage", "group": "Group H", "home": "Cape Verde", "hScore": null, "aScore": null, "away": "Uruguay" },
+          { "id": 65, "stage": "Group Stage", "group": "Group I", "home": "Iraq", "hScore": null, "aScore": null, "away": "France" },
+          { "id": 66, "stage": "Group Stage", "group": "Group I", "home": "Senegal", "hScore": null, "aScore": null, "away": "Norway" },
+          { "id": 67, "stage": "Group Stage", "group": "Group J", "home": "Jordan", "hScore": null, "aScore": null, "away": "Argentina" },
+          { "id": 68, "stage": "Group Stage", "group": "Group J", "home": "Algeria", "hScore": null, "aScore": null, "away": "Austria" },
+          { "id": 69, "stage": "Group Stage", "group": "Group K", "home": "Uzbekistan", "hScore": null, "aScore": null, "away": "Portugal" },
+          { "id": 70, "stage": "Group Stage", "group": "Group K", "home": "DR Congo", "hScore": null, "aScore": null, "away": "Colombia" },
+          { "id": 71, "stage": "Group Stage", "group": "Group L", "home": "Ghana", "hScore": null, "aScore": null, "away": "England" },
+          { "id": 72, "stage": "Group Stage", "group": "Group L", "home": "Croatia", "hScore": null, "aScore": null, "away": "Panama" }
+        ];
+
+        function cleanTeamName(name) {
+            if (!name) return "";
+            let trimmed = name.trim();
+            if (trimmed === "Bosnia & Herz") return "Bosnia & Herz.";
+            return trimmed;
+        }
+
+        // --- 2. ADVANCED CALCULATION MATRIX ---
+        function calculateTournament() {
+            let memberPoints = {};
+            let groupStandings = {};
+            let masterTeamsStats = {};
+
+            Object.values(familyAllocations).forEach(name => { memberPoints[name] = 0; });
+            Object.keys(familyAllocations).forEach(tName => {
+                masterTeamsStats[tName] = { name: tName, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 };
+            });
+
+            rawMatches.forEach(m => {
+                let hClean = cleanTeamName(m.home);
+                let aClean = cleanTeamName(m.away);
+                if (m.stage === "Group Stage") {
+                    if (!groupStandings[m.group]) groupStandings[m.group] = {};
+                    [hClean, aClean].forEach(t => {
+                        if (!groupStandings[m.group][t]) groupStandings[m.group][t] = masterTeamsStats[t];
+                    });
+                }
+            });
+
+            // Fun Prize Track Flags
+            let maxSingleGameGoals = 0;
+            let goalAvalancheTeam = "None yet";
+            let goalAvalancheOwner = "";
+
+            let biggestRankDiff = -999;
+            let giantKillerWinner = "None yet";
+            let giantKillerDesc = "No major upsets recorded";
+
+            rawMatches.forEach(m => {
+                let hClean = cleanTeamName(m.home);
+                let aClean = cleanTeamName(m.away);
+
+                if (m.hScore !== null && m.aScore !== null) {
+                    let ownerHome = familyAllocations[hClean] || "Unassigned";
+                    let ownerAway = familyAllocations[aClean] || "Unassigned";
+
+                    // Match Win/Draw Leaderboard Accumulator
+                    if (m.hScore > m.aScore) {
+                        if (familyAllocations[hClean]) memberPoints[familyAllocations[hClean]] += 3;
+                    } else if (m.aScore > m.hScore) {
+                        if (familyAllocations[aClean]) memberPoints[familyAllocations[aClean]] += 3;
+                    } else {
+                        if (familyAllocations[hClean]) memberPoints[familyAllocations[hClean]] += 1;
+                        if (familyAllocations[aClean]) memberPoints[familyAllocations[aClean]] += 1;
+                    }
+
+                    // Stats engine for group records
+                    let hStats = masterTeamsStats[hClean];
+                    let aStats = masterTeamsStats[aClean];
+                    if (hStats && aStats) {
+                        hStats.p += 1; aStats.p += 1;
+                        hStats.gf += m.hScore; aStats.gf += m.aScore;
+                        hStats.ga += m.aScore; aStats.ga += m.hScore;
+
+                        if (m.hScore > m.aScore) {
+                            hStats.w += 1; hStats.pts += 3; aStats.l += 1;
+                        } else if (m.aScore > m.hScore) {
+                            aStats.w += 1; aStats.pts += 3; hStats.l += 1;
+                        } else {
+                            hStats.d += 1; hStats.pts += 1; aStats.d += 1; aStats.pts += 1;
+                        }
+                        hStats.gd = hStats.gf - hStats.ga;
+                        aStats.gd = aStats.gf - aStats.ga;
+                    }
+
+                    // Prize Metric 1: Goal Avalanche
+                    if (m.hScore > maxSingleGameGoals) {
+                        maxSingleGameGoals = m.hScore;
+                        goalAvalancheTeam = hClean;
+                        goalAvalancheOwner = ownerHome;
+                    }
+                    if (m.aScore > maxSingleGameGoals) {
+                        maxSingleGameGoals = m.aScore;
+                        goalAvalancheTeam = aClean;
+                        goalAvalancheOwner = ownerAway;
+                    }
+
+                    // Prize Metric 2: Giant Killer (Rank difference logic)
+                    let hRank = teamRankings[hClean] || 48;
+                    let aRank = teamRankings[aClean] || 48;
+
+                    if (m.hScore > m.aScore) {
+                        let diff = hRank - aRank; // Underdog has larger number rank
+                        if (diff > biggestRankDiff && diff > 0) {
+                            biggestRankDiff = diff;
+                            giantKillerWinner = hClean;
+                            giantKillerDesc = `Beat ${aClean} (Rank Upset: +${diff})`;
+                        }
+                    } else if (m.aScore > m.hScore) {
+                        let diff = aRank - hRank;
+                        if (diff > biggestRankDiff && diff > 0) {
+                            biggestRankDiff = diff;
+                            giantKillerWinner = aClean;
+                            giantKillerDesc = `Beat ${hClean} (Rank Upset: +${diff})`;
+                        }
+                    }
+                }
+            });
+
+            // Prize Metric 3: Wooden Spoon (Sort order: points ASC -> GD ASC -> Goals Scored ASC)
+            let finalTeamsArray = Object.values(masterTeamsStats).filter(t => t.p > 0);
+            let worstTeam = null;
+            if (finalTeamsArray.length > 0) {
+                finalTeamsArray.sort((a, b) => a.pts - b.pts || a.gd - b.gd || a.gf - b.gf);
+                worstTeam = finalTeamsArray[0];
+            }
+
+            renderUI(groupStandings, memberPoints, worstTeam, giantKillerWinner, giantKillerDesc, goalAvalancheTeam, goalAvalancheOwner, maxSingleGameGoals);
+        }
+
+        // --- 3. DYNAMIC INTERFACE RENDERER ---
+        function renderUI(groupStandings, memberPoints, worstTeam, gkWinner, gkDesc, gaTeam, gaOwner, gaGoals) {
+            // Precise Live Date Update Stamp
+            const now = new Date();
+            document.getElementById('lastUpdatedTime').innerText = now.toLocaleDateString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            }) + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+            // Display leaderboards
+            const lbBody = document.getElementById('leaderboardBody');
+            lbBody.innerHTML = '';
+            let sortedLeaderboard = Object.entries(memberPoints).sort((a, b) => b[1] - a[1]);
+            sortedLeaderboard.forEach(([name, pts], index) => {
+                let badgesHtml = (personToTeamsMap[name] || []).map(t => `<span class="team-badge">${t}</span>`).join('');
+                lbBody.innerHTML += `
+                    <tr>
+                        <td><strong style="color:var(--accent-green)">#${index + 1}</strong></td>
+                        <td>
+                            <div style="font-weight: bold; margin-bottom: 0.35rem; font-size: 1.05rem;">${name}</div>
+                            <div class="teams-badge-container">${badgesHtml}</div>
+                        </td>
+                        <td class="text-right"><strong style="color:var(--accent-blue); font-size: 1.1rem;">${pts} Pts</strong></td>
+                    </tr>
+                `;
+            });
+
+            // Display Awards
+            if (worstTeam) {
+                let spoonOwner = familyAllocations[worstTeam.name] || "Unassigned";
+                document.getElementById('woodenSpoonWinner').innerText = worstTeam.name;
+                document.getElementById('woodenSpoonDesc').innerText = `${spoonOwner} (${worstTeam.pts} pts, ${worstTeam.gd} GD)`;
+            }
+            if (gkWinner !== "None yet") {
+                let gkOwner = familyAllocations[gkWinner] || "Unassigned";
+                document.getElementById('giantKillerWinner').innerText = gkWinner;
+                document.getElementById('giantKillerDesc').innerText = `${gkOwner} • ${gkDesc}`;
+            }
+            if (gaGoals > 0) {
+                document.getElementById('goalAvalancheWinner').innerText = gaTeam;
+                document.getElementById('goalAvalancheDesc').innerText = `${gaOwner} • Scored ${gaGoals} in 1 game`;
+            }
+
+            // Display Group Tables Feed
+            const groupsBox = document.getElementById('groupsContainer');
+            groupsBox.innerHTML = '';
+            Object.keys(groupStandings).sort().forEach(gName => {
+                let groupTeams = Object.values(groupStandings[gName]);
+                groupTeams.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+
+                let rowsHtml = '';
+                groupTeams.forEach(t => {
+                    let owner = familyAllocations[t.name] || "Neutral";
+                    rowsHtml += `
+                        <tr>
+                            <td><strong>${t.name}</strong><span class="owner-lbl">(${owner})</span></td>
+                            <td class="text-center">${t.p}</td>
+                            <td class="text-center">${t.gd > 0 ? '+' + t.gd : t.gd}</td>
+                            <td class="text-center" style="font-weight:bold; color:var(--accent-green)">${t.pts}</td>
+                        </tr>
+                    `;
+                });
+
+                groupsBox.innerHTML += `
+                    <div class="group-card">
+                        <h3>${gName}</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th class="text-center">P</th>
+                                    <th class="text-center">GD</th>
+                                    <th class="text-center">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', calculateTournament);
+    </script>
+</body>
+</html>
