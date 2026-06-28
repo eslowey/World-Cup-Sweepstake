@@ -197,21 +197,22 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-slate-800 text-xs font-bold uppercase tracking-wider text-slate-500">
-                                <th class="pb-3 pl-2 w-16">Rank</th>
-                                <th class="pb-3 w-48">Family Member</th>
-                                <th class="pb-3 w-64">Probability Bar</th>
-                                <th class="pb-3 text-right w-24">Overall %</th>
-                                <th class="pb-3 pl-8">Team Contributions</th>
+                                <th class="pb-3 pl-2 w-12 md:w-16">Rank</th>
+                                <th class="pb-3 w-32 md:w-48">Family Member</th>
+                                <th class="pb-3 w-48 md:w-64 hidden md:table-cell">Probability Bar</th>
+                                <th class="pb-3 text-right w-20 md:w-24">Overall %</th>
+                                <th class="pb-3 pl-4 md:pl-8">Team Contributions</th>
                             </tr>
                         </thead>
                         <tbody id="probability-rows" class="divide-y divide-slate-800/60">
                             <!-- Populated dynamically -->
                         </tbody>
                         <tfoot>
-                            <tr class="border-t-2 border-slate-800 font-extrabold text-sm text-slate-300 bg-slate-950/40">
-                                <td colspan="3" class="py-4 pl-2 text-right uppercase tracking-wider text-slate-500 text-xs">Total Sweepstake Probability</td>
-                                <td class="py-4 text-right font-black text-blue-400 text-base border-r border-slate-800/60">100.00%</td>
-                                <td class="py-4 pl-8 text-slate-500 text-xs italic">All 48 team probabilities mathematically accounted for</td>
+                            <tr class="border-t-2 border-slate-800 font-extrabold text-xs md:text-sm text-slate-300 bg-slate-950/40">
+                                <td colspan="2" class="py-3 md:py-4 pl-2 text-right uppercase tracking-wider text-slate-500 text-[10px] md:text-xs">Total Sweepstake Probability</td>
+                                <td class="py-3 md:py-4 text-right font-black text-blue-400 text-sm md:text-base border-r border-slate-800/60 hidden md:table-cell"></td>
+                                <td class="py-3 md:py-4 text-right font-black text-blue-400 text-sm md:text-base border-r border-slate-800/60 pr-2 md:pr-4">100.00%</td>
+                                <td class="py-3 md:py-4 pl-4 md:pl-8 text-slate-500 text-[10px] md:text-xs italic">All 48 team probabilities mathematically accounted for</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -614,6 +615,43 @@
                 .join(', ');
         }
 
+        function getMatchStatus(dateStr) {
+            if (!dateStr) return null;
+            const match = dateStr.match(/(June|July)\s+(\d+)/i);
+            if (!match) return null;
+            const monthStr = match[1];
+            const dayNum = parseInt(match[2], 10);
+            const monthIdx = monthStr.toLowerCase() === 'june' ? 5 : 6;
+
+            const matchDate = new Date(2026, monthIdx, dayNum);
+            matchDate.setHours(0, 0, 0, 0);
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+
+            // Fallback mock to match June 28, 2026 for simulation/demo if year isn't 2026
+            let activeToday = today;
+            let activeTomorrow = tomorrow;
+            if (activeToday.getFullYear() !== 2026) {
+                activeToday = new Date(2026, 5, 28);
+                activeToday.setHours(0, 0, 0, 0);
+                activeTomorrow = new Date(2026, 5, 29);
+                activeTomorrow.setHours(0, 0, 0, 0);
+            }
+
+            const matchTime = matchDate.getTime();
+            if (matchTime === activeToday.getTime()) {
+                return 'today';
+            } else if (matchTime === activeTomorrow.getTime()) {
+                return 'tomorrow';
+            }
+            return null;
+        }
+
         function renderGroups(standings) {
             const grid = document.getElementById('groups-grid');
             grid.innerHTML = '';
@@ -671,12 +709,35 @@
                     const hScoreDisp = m.hScore !== null ? m.hScore : '';
                     const aScoreDisp = m.aScore !== null ? m.aScore : '';
 
+                    // Determine if the match is today or tomorrow to apply highlighting
+                    const dateStatus = getMatchStatus(m.date);
+                    let cardBorderClass = "border-slate-800/90 bg-[#151f32]/90";
+                    let statusBadge = "";
+
+                    if (dateStatus === 'today') {
+                        cardBorderClass = "border-emerald-500 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.25)] ring-1 ring-emerald-500/30";
+                        statusBadge = `
+                            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[0.6rem] font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 shrink-0 animate-pulse">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>TODAY
+                            </span>
+                        `;
+                    } else if (dateStatus === 'tomorrow') {
+                        cardBorderClass = "border-blue-500 bg-blue-950/25 shadow-[0_0_15px_rgba(59,130,246,0.2)] ring-1 ring-blue-500/30";
+                        statusBadge = `
+                            <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[0.6rem] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                                TOMORROW
+                            </span>
+                        `;
+                    }
+
                     container.innerHTML += `
                         <div class="match-card-container">
-                            <div class="w-full bg-[#151f32]/90 border border-slate-800/90 rounded-xl p-3 shadow-md">
-                                <div class="flex justify-between items-center text-[0.65rem] text-slate-500 mb-2 border-b border-slate-800/60 pb-1.5">
-                                    <span class="font-bold tracking-wider">${m.venue} (${m.date})</span>
-                                    ${m.next ? `<span class="text-blue-500 font-semibold">👉 Next: ${m.next}</span>` : '<span class="text-emerald-500 font-bold">🏆 FINAL</span>'}
+                            <div class="w-full border rounded-xl p-3 shadow-md transition-all duration-300 ${cardBorderClass}">
+                                <div class="flex justify-between items-center text-[0.65rem] text-slate-400 mb-2 border-b border-slate-800/60 pb-1.5 gap-2">
+                                    <div class="flex items-center gap-1.5 min-w-0">
+                                        <span class="font-bold tracking-wider truncate">${m.venue} (${m.date})</span>
+                                    </div>
+                                    ${statusBadge || (m.next ? `<span class="text-blue-500 font-semibold shrink-0">👉 Next: ${m.next}</span>` : '<span class="text-emerald-500 font-bold shrink-0">🏆 FINAL</span>')}
                                 </div>
                                 <div class="flex flex-col gap-2">
                                     <div class="flex justify-between items-center text-xs md:text-sm">
@@ -733,18 +794,18 @@
             sortedMembers.forEach(([name, data], idx) => {
                 // Render rank badge
                 let rankBadge = `<span class="text-slate-500 font-bold">#${idx+1}</span>`;
-                if (idx === 0) rankBadge = `<span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-xs px-2.5 py-1 rounded-md font-extrabold">#1</span>`;
-                else if (idx === 1) rankBadge = `<span class="bg-slate-300/20 text-slate-300 border border-slate-300/30 text-xs px-2.5 py-1 rounded-md font-extrabold">#2</span>`;
-                else if (idx === 2) rankBadge = `<span class="bg-amber-600/20 text-amber-500 border border-amber-600/30 text-xs px-2.5 py-1 rounded-md font-extrabold">#3</span>`;
+                if (idx === 0) rankBadge = `<span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded font-extrabold">#1</span>`;
+                else if (idx === 1) rankBadge = `<span class="bg-slate-300/20 text-slate-300 border border-slate-300/30 text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded font-extrabold">#2</span>`;
+                else if (idx === 2) rankBadge = `<span class="bg-amber-600/20 text-amber-500 border border-amber-600/30 text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded font-extrabold">#3</span>`;
 
-                // Render detail badges
+                // Render detail badges - tighter padding and responsive widths on mobile
                 const teamBadges = data.details.map(t => {
                     const flag = teamFlags[t.team] || '';
                     return `
-                        <span class="inline-flex items-center gap-1 bg-slate-800 border border-slate-700/60 rounded-md px-2 py-1 text-xs text-slate-300">
+                        <span class="inline-flex items-center gap-1 bg-slate-800 border border-slate-700/60 rounded px-1.5 py-0.5 text-[10px] md:text-xs text-slate-300">
                             <span>${flag}</span>
-                            <span class="font-medium">${t.team}</span>
-                            <span class="text-[0.65rem] text-blue-400 font-bold">(${t.prob.toFixed(2)}%)</span>
+                            <span class="font-medium max-w-[55px] md:max-w-none truncate">${t.team}</span>
+                            <span class="text-[9px] md:text-[0.65rem] text-blue-400 font-bold">(${t.prob.toFixed(1)}%)</span>
                         </span>
                     `;
                 }).join(' ');
@@ -754,18 +815,18 @@
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/35 transition-all duration-150">
-                        <td class="py-4 pl-2">${rankBadge}</td>
-                        <td class="py-4 font-black text-white text-sm md:text-base">${name}</td>
-                        <td class="py-4">
-                            <div class="w-full bg-slate-850 rounded-full h-2.5 border border-slate-800">
+                        <td class="py-2.5 md:py-4 pl-2">${rankBadge}</td>
+                        <td class="py-2.5 md:py-4 font-black text-white text-xs md:text-base">${name}</td>
+                        <td class="py-2.5 md:py-4 hidden md:table-cell">
+                            <div class="w-full bg-slate-850 rounded-full h-2 border border-slate-800">
                                 <div class="${barColor} h-full rounded-full" style="width: ${data.total}%"></div>
                             </div>
                         </td>
-                        <td class="py-4 text-right font-black text-blue-400 text-base border-r border-slate-800/60 pr-4">
+                        <td class="py-2.5 md:py-4 text-right font-black text-blue-400 text-xs md:text-base border-r border-slate-800/60 pr-2 md:pr-4">
                             ${data.total.toFixed(2)}%
                         </td>
-                        <td class="py-4 pl-8">
-                            <div class="flex flex-wrap gap-1.5">${teamBadges}</div>
+                        <td class="py-2.5 md:py-4 pl-4 md:pl-8">
+                            <div class="flex flex-wrap gap-1 md:gap-1.5">${teamBadges}</div>
                         </td>
                     </tr>
                 `;
