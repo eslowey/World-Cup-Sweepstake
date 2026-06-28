@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Family World Cup Sweepstake Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-color: #151f32;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --bracket-line: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .timestamp {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        /* Interactive Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            background-color: var(--card-color);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Utilities */
+        .btn-reset {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        /* Main Dashboard Grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1.6fr 1.4fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            height: fit-content;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Leaderboard and Group Styling */
+        .leaderboard-table, .group-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .leaderboard-table th, .leaderboard-table td,
+        .group-table th, .group-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table th, .group-table th {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .points-cell {
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+
+        .teams-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .team-badge {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .info-box {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 0.25rem;
+            margin-right: 0.5rem;
+        }
+
+        .next-match-box {
+            color: var(--text-muted);
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 2px solid var(--accent-blue);
+        }
+
+        .latest-result-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 2px solid var(--accent-green);
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .groups-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .group-container {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .group-header {
+            font-weight: bold;
+            color: var(--accent-orange);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        /* Fixture Inputs and Timeline Styling */
+        .matches-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 850px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .match-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .match-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            min-width: 75px;
+        }
+
+        .match-team-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+            padding: 0 15px;
+        }
+
+        .m-team-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        /* Editable Score inputs */
+        .score-input {
+            width: 40px;
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 2px 0;
+        }
+
+        .score-input:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+            background: #2e3b4e;
+        }
+
+        /* ========================================= */
+        /* BRACKET LAYOUT (Ref: Screenshot_20260628_114200_WhatsApp.jpg) */
+        /* ========================================= */
+        .bracket-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .bracket-container {
+            display: grid;
+            grid-template-columns: repeat(5, 220px);
+            gap: 15px 40px;
+            justify-content: center;
+            align-items: center;
+            min-width: 1200px;
+            position: relative;
+        }
+
+        .bracket-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 100%;
+            min-height: 850px;
+        }
+
+        .bracket-header-cell {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .bracket-match {
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            width: 100%;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .bracket-match-info {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 3px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bracket-team-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .bracket-team-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .bracket-team-name {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 130px;
+        }
+
+        .bracket-owner {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .bracket-score-display {
+            font-weight: bold;
+            color: #fff;
+            width: 25px;
+            text-align: right;
+        }
+
+        /* Champion Display in the Center Column */
+        .champion-box {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.05));
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .champion-title {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 5px;
+        }
+
+        .champion-team {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .champion-owner {
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive adjustments */
+        @media (max-width: 1024px) {
+            .bracket-wrapper {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🏆 Family World Cup Sweepstake</h1>
+            <div class="timestamp">Live 2026 World Cup Bracket Tracking • Current Date: June 28, 2026</div>
+            
+            <!-- Global Control Buttons -->
+            <div style="position: absolute; right: 10px; top: 15px;">
+                <button class="btn-reset" onclick="resetToDefaults()"><i class="fa-solid fa-rotate-left"></i> Reset Scores</button>
+            </div>
+        </header>
+
+        <!-- Dynamic Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-chart-line"></i> Standings & Groups
+            </button>
+            <button class="tab-btn" onclick="switchTab('bracket-tab')">
+                <i class="fa-solid fa-sitemap"></i> Knockout Bracket
+            </button>
+            <button class="tab-btn" onclick="switchTab('fixtures-tab')">
+                <i class="fa-solid fa-calendar-days"></i> Editable Timeline
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: STANDINGS & GROUPS ================= -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid-layout">
+                <!-- Live Leaderboard Section -->
+                <div>
+                    <div class="card">
+                        <div class="card-title">
+                            <span>📊 Family Leaderboard</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Points sum of all 4 owned teams</span>
+                        </div>
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Rank</th>
+                                    <th>Family Member</th>
+                                    <th style="text-align: right;">Total Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Group Tables Grid -->
+                <div>
+                    <div class="card">
+                        <div class="card-title">🔮 Group Phase Tables</div>
+                        <div class="groups-grid" id="groups-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: KNOCKOUT BRACKET (Ref: Screenshot_20260628_114200_WhatsApp.jpg) ================= -->
+        <div id="bracket-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <span>🌳 Round of 32 Tournament Bracket Tree</span>
+                    <span style="font-size: 0.8rem; color: var(--accent-orange);">Updates automatically as scores are recorded!</span>
+                </div>
+
+                <div class="bracket-wrapper">
+                    <div class="bracket-container">
+                        
+                        <!-- COLUMN 1: LEFT ROUND OF 32 (8 MATCHES) -->
+                        <div class="bracket-column">
+                            <div class="bracket-header-cell">Round of 32 (Left)</div>
+                            
+                            <!-- Match 1 -->
+                            <div class="bracket-match" id="b-match-1"></div>
+                            <!-- Match 2 -->
+                            <div class="bracket-match" id="b-match-2"></div>
+                            <!-- Match 3 -->
+                            <div class="bracket-match" id="b-match-3"></div>
+                            <!-- Match 4 -->
+                            <div class="bracket-match" id="b-match-4"></div>
+                            <!-- Match 5 -->
+                            <div class="bracket-match" id="b-match-5"></div>
+                            <!-- Match 6 -->
+                            <div class="bracket-match" id="b-match-6"></div>
+                            <!-- Match 7 -->
+                            <div class="bracket-match" id="b-match-7"></div>
+                            <!-- Match 8 -->
+                            <div class="bracket-match" id="b-match-8"></div>
+                        </div>
+
+                        <!-- COLUMN 2: LEFT ROUND OF 16 & QUARTERS -->
+                        <div class="bracket-column" style="justify-content: space-around;">
+                            <div class="bracket-header-cell">Round of 16 (Left)</div>
+                            
+                            <!-- R16 Match 1 -->
+                            <div class="bracket-match" id="b-r16-1"></div>
+                            <!-- R16 Match 2 -->
+                            <div class="bracket-match" id="b-r16-2"></div>
+                            
+                            <div class="bracket-header-cell" style="margin-top: 30px;">Quarterfinals (Left)</div>
+                            <!-- QF Match 1 -->
+                            <div class="bracket-match" id="b-qf-1"></div>
+                            
+                            <!-- R16 Match 3 -->
+                            <div class="bracket-header-cell" style="margin-top: 30px;">Round of 16 (Left B)</div>
+                            <div class="bracket-match" id="b-r16-3"></div>
+                            <!-- R16 Match 4 -->
+                            <div class="bracket-match" id="b-r16-4"></div>
+                            
+                            <div class="bracket-header-cell" style="margin-top: 30px;">Quarterfinals (Left B)</div>
+                            <!-- QF Match 2 -->
+                            <div class="bracket-match" id="b-qf-2"></div>
+                        </div>
+
+                        <!-- COLUMN 3: SEMIFINALS, FINALS & CHAMPION (CENTER) -->
+                        <div class="bracket-column" style="justify-content: center; gap: 40px;">
+                            <div class="bracket-header-cell">Semifinals & Finals</div>
+                            
+                            <!-- Semifinal Left -->
+                            <div class="bracket-match" id="b-sf-1" style="border-left: 3px solid var(--accent-blue);"></div>
+                            
+                            <!-- Grand Champion display -->
+                            <div class="champion-box" id="b-champion">
+                                <div class="champion-title"><i class="fa-solid fa-crown"></i> Champion</div>
+                                <div class="champion-team" id="champ-team-name">Pending...</div>
+                                <div class="champion-owner" id="champ-owner-name">-</div>
+                            </div>
+
+                            <!-- Final Match Box -->
+                            <div class="bracket-match" id="b-final" style="border: 2px solid var(--accent-orange);"></div>
+
+                            <!-- Semifinal Right -->
+                            <div class="bracket-match" id="b-sf-2" style="border-right: 3px solid var(--accent-blue);"></div>
+                        </div>
+
+                        <!-- COLUMN 4: RIGHT ROUND OF 16 & QUARTERS -->
+                        <div class="bracket-column" style="justify-content: space-around;">
+                            <div class="bracket-header-cell">Round of 16 (Right)</div>
+                            
+                            <!-- R16 Match 5 -->
+                            <div class="bracket-match" id="b-r16-5"></div>
+                            <!-- R16 Match 6 -->
+                            <div class="bracket-match" id="b-r16-6"></div>
+                            
+                            <div class="bracket-header-cell" style="margin-top: 30px;">Quarterfinals (Right)</div>
+                            <!-- QF Match 3 -->
+                            <div class="bracket-match" id="b-qf-3"></div>
+                            
+                            <div class="bracket-header-cell" style="margin-top: 30px;">Round of 16 (Right B)</div>
+                            <!-- R16 Match 7 -->
+                            <div class="bracket-match" id="b-r16-7"></div>
+                            <!-- R16 Match 8 -->
+                            <div class="bracket-match" id="b-r16-8"></div>
+                            
+                            <div class="bracket-header-cell" style="margin-top: 30px;">Quarterfinals (Right B)</div>
+                            <!-- QF Match 4 -->
+                            <div class="bracket-match" id="b-qf-4"></div>
+                        </div>
+
+                        <!-- COLUMN 5: RIGHT ROUND OF 32 (8 MATCHES) -->
+                        <div class="bracket-column">
+                            <div class="bracket-header-cell">Round of 32 (Right)</div>
+                            
+                            <!-- Match 9 -->
+                            <div class="bracket-match" id="b-match-9"></div>
+                            <!-- Match 10 -->
+                            <div class="bracket-match" id="b-match-10"></div>
+                            <!-- Match 11 -->
+                            <div class="bracket-match" id="b-match-11"></div>
+                            <!-- Match 12 -->
+                            <div class="bracket-match" id="b-match-12"></div>
+                            <!-- Match 13 -->
+                            <div class="bracket-match" id="b-match-13"></div>
+                            <!-- Match 14 -->
+                            <div class="bracket-match" id="b-match-14"></div>
+                            <!-- Match 15 -->
+                            <div class="bracket-match" id="b-match-15"></div>
+                            <!-- Match 16 -->
+                            <div class="bracket-match" id="b-match-16"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: TIMELINE (EDITABLE FIXTURES) ================= -->
+        <div id="fixtures-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <span>🗓️ Editable Fixtures and Results Timeline</span>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Adjust scores here to automatically calculate everything</span>
+                </div>
+                <div class="matches-timeline" id="matches-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const teamFlags = {
+            "Argentina": "🇦🇷", "France": "🇫🇷", "Brazil": "🇧🇷", "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "Spain": "🇪🇸", "Germany": "🇩🇪", "Portugal": "🇵🇹", "Netherlands": "🇳🇱",
+            "Belgium": "🇧🇪", "Uruguay": "🇺🇾", "Croatia": "🇭🇷", "Colombia": "🇨🇴",
+            "Morocco": "🇲🇦", "United States": "🇺🇸", "Japan": "🇯🇵", "Switzerland": "🇨🇭",
+            "Austria": "🇦🇹", "Sweden": "🇸🇪", "Norway": "🇳🇴", "Turkey": "🇹🇷",
+            "Mexico": "🇲🇽", "Ecuador": "🇪🇨", "Senegal": "🇸🇳", "South Korea": "🇰🇷",
+            "Australia": "🇦🇺", "Scotland": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Czechia": "🇨🇿", "Algeria": "🇩🇿",
+            "Ivory Coast": "🇨🇮", "Egypt": "🇪🇬", "Tunisia": "🇹🇳", "Ghana": "🇬🇭",
+            "Paraguay": "🇵🇾", "Bosnia & Herz.": "🇧🇦", "Canada": "🇨🇦", "Saudi Arabia": "🇸🇦",
+            "Iran": "🇮🇷", "Qatar": "🇶🇦", "South Africa": "🇿🇦", "Iraq": "🇮🇶",
+            "Uzbekistan": "🇺🇿", "Cape Verde": "🇨🇻", "DR Congo": "🇨🇩", "Panama": "🇵🇦",
+            "New Zealand": "🇳🇿", "Jordan": "🇯🇴", "Haiti": "🇭🇹", "Curacao": "🇨🇼"
+        };
+
+        const familyAllocations = {
+            "Brazil": "Nana", "Turkey": "Nana", "Ghana": "Nana", "Iraq": "Nana",
+            "Netherlands": "Grandad", "Mexico": "Grandad", "Tunisia": "Grandad", "Qatar": "Grandad",
+            "Uruguay": "Cian", "South Korea": "Cian", "Egypt": "Cian", "DR Congo": "Cian",
+            "Germany": "Cormac", "United States": "Cormac", "Canada": "Cormac", "Curacao": "Cormac",
+            "Spain": "Patrick", "Ecuador": "Patrick", "Saudi Arabia": "Patrick", "Panama": "Patrick",
+            "Portugal": "Cara", "Austria": "Cara", "Bosnia & Herz.": "Cara", "South Africa": "Cara",
+            "Colombia": "Isabelle", "Norway": "Isabelle", "Ivory Coast": "Isabelle", "Cape Verde": "Isabelle",
+            "Belgium": "Niamh", "Senegal": "Niamh", "Australia": "Niamh", "New Zealand": "Niamh",
+            "Croatia": "Kevin", "Switzerland": "Kevin", "Scotland": "Kevin", "Uzbekistan": "Kevin",
+            "England": "Niall", "Sweden": "Niall", "Algeria": "Niall", "Haiti": "Niall",
+            "Argentina": "Roisin", "Japan": "Roisin", "Paraguay": "Roisin", "Iran": "Roisin",
+            "France": "Mary", "Morocco": "Mary", "Czechia": "Mary", "Jordan": "Mary"
+        };
+
+        // Complete set of Group Matches
+        const baseGroupMatches = [
+            { "id": 1, "stage": "Group Stage", "group": "Group A", "date": "2026-06-11", "time": "20:00:00", "home": "Mexico", "hScore": 2, "aScore": 0, "away": "South Africa" },
+            { "id": 2, "stage": "Group Stage", "group": "Group A", "date": "2026-06-12", "time": "03:00:00", "home": "South Korea", "hScore": 2, "aScore": 1, "away": "Czechia" },
+            { "id": 3, "stage": "Group Stage", "group": "Group B", "date": "2026-06-12", "time": "20:00:00", "home": "Canada", "hScore": 1, "aScore": 1, "away": "Bosnia & Herz." },
+            { "id": 7, "stage": "Group Stage", "group": "Group D", "date": "2026-06-13", "time": "02:00:00", "home": "United States", "hScore": 4, "aScore": 1, "away": "Paraguay" },
+            { "id": 4, "stage": "Group Stage", "group": "Group B", "date": "2026-06-13", "time": "20:00:00", "home": "Qatar", "hScore": 1, "aScore": 1, "away": "Switzerland" },
+            { "id": 5, "stage": "Group Stage", "group": "Group C", "date": "2026-06-13", "time": "23:00:00", "home": "Brazil", "hScore": 1, "aScore": 1, "away": "Morocco" },
+            { "id": 6, "stage": "Group Stage", "group": "Group C", "date": "2026-06-14", "time": "02:00:00", "home": "Haiti", "hScore": 0, "aScore": 1, "away": "Scotland" },
+            { "id": 8, "stage": "Group Stage", "group": "Group D", "date": "2026-06-14", "time": "04:59:00", "home": "Australia", "hScore": 2, "aScore": 0, "away": "Turkey" },
+            { "id": 9, "stage": "Group Stage", "group": "Group E", "date": "2026-06-14", "time": "18:00:00", "home": "Germany", "hScore": 7, "aScore": 1, "away": "Curacao" },
+            { "id": 11, "stage": "Group Stage", "group": "Group F", "date": "2026-06-14", "time": "21:00:00", "home": "Netherlands", "hScore": 2, "aScore": 2, "away": "Japan" },
+            { "id": 10, "stage": "Group Stage", "group": "Group E", "date": "2026-06-15", "time": "00:00:00", "home": "Ivory Coast", "hScore": 1, "aScore": 0, "away": "Ecuador" },
+            { "id": 12, "stage": "Group Stage", "group": "Group F", "date": "2026-06-15", "time": "03:00:00", "home": "Sweden", "hScore": 5, "aScore": 1, "away": "Tunisia" },
+            { "id": 15, "stage": "Group Stage", "group": "Group H", "date": "2026-06-15", "time": "17:00:00", "home": "Spain", "hScore": 0, "aScore": 0, "away": "Cape Verde" },
+            { "id": 13, "stage": "Group Stage", "group": "Group G", "date": "2026-06-15", "time": "20:00:00", "home": "Belgium", "hScore": 1, "aScore": 1, "away": "Egypt" },
+            { "id": 16, "stage": "Group Stage", "group": "Group H", "date": "2026-06-15", "time": "23:00:00", "home": "Saudi Arabia", "hScore": 1, "aScore": 1, "away": "Uruguay" },
+            { "id": 14, "stage": "Group Stage", "group": "Group G", "date": "2026-06-16", "time": "02:00:00", "home": "Iran", "hScore": 2, "aScore": 2, "away": "New Zealand" },
+            { "id": 17, "stage": "Group Stage", "group": "Group I", "date": "2026-06-16", "time": "20:00:00", "home": "France", "hScore": 3, "aScore": 1, "away": "Senegal" },
+            { "id": 18, "stage": "Group Stage", "group": "Group I", "date": "2026-06-16", "time": "23:00:00", "home": "Iraq", "hScore": 1, "aScore": 4, "away": "Norway" },
+            { "id": 19, "stage": "Group Stage", "group": "Group J", "date": "2026-06-17", "time": "02:00:00", "home": "Argentina", "hScore": 3, "aScore": 0, "away": "Algeria" },
+            { "id": 20, "stage": "Group Stage", "group": "Group J", "date": "2026-06-17", "time": "04:59:00", "home": "Austria", "hScore": 3, "aScore": 1, "away": "Jordan" },
+            { "id": 21, "stage": "Group Stage", "group": "Group K", "date": "2026-06-17", "time": "18:00:00", "home": "Portugal", "hScore": 1, "aScore": 1, "away": "DR Congo" },
+            { "id": 23, "stage": "Group Stage", "group": "Group L", "date": "2026-06-17", "time": "21:00:00", "home": "England", "hScore": 4, "aScore": 2, "away": "Croatia" },
+            { "id": 24, "stage": "Group Stage", "group": "Group L", "date": "2026-06-18", "time": "00:00:00", "home": "Ghana", "hScore": 1, "aScore": 0, "away": "Panama" },
+            { "id": 25, "stage": "Group Stage", "group": "Group K", "date": "2026-06-18", "time": "03:00:00", "home": "Uzbekistan", "hScore": 1, "aScore": 3, "away": "Colombia" },
+            { "id": 26, "stage": "Group Stage", "group": "Group A", "date": "2026-06-18", "time": "17:00:00", "home": "Czechia", "hScore": 1, "aScore": 1, "away": "South Africa" },
+            { "id": 27, "stage": "Group Stage", "group": "Group B", "date": "2026-06-18", "time": "20:00:00", "home": "Switzerland", "hScore": 4, "aScore": 1, "away": "Bosnia & Herz." },
+            { "id": 22, "stage": "Group Stage", "group": "Group B", "date": "2026-06-18", "time": "23:00:00", "home": "Canada", "hScore": 6, "aScore": 0, "away": "Qatar" },
+            { "id": 28, "stage": "Group Stage", "group": "Group A", "date": "2026-06-19", "time": "02:00:00", "home": "Mexico", "hScore": 1, "aScore": 0, "away": "South Korea" },
+            { "id": 29, "stage": "Group Stage", "group": "Group D", "date": "2026-06-19", "time": "20:00:00", "home": "United States", "hScore": 2, "aScore": 0, "away": "Australia" },
+            { "id": 30, "stage": "Group Stage", "group": "Group C", "date": "2026-06-19", "time": "23:00:00", "home": "Scotland", "hScore": 0, "aScore": 1, "away": "Morocco" },
+            { "id": 31, "stage": "Group Stage", "group": "Group C", "date": "2026-06-20", "time": "02:00:00", "home": "Brazil", "hScore": 3, "aScore": 0, "away": "Haiti" },
+            { "id": 32, "stage": "Group Stage", "group": "Group D", "date": "2026-06-20", "time": "04:59:00", "home": "Turkey", "hScore": 0, "aScore": 1, "away": "Paraguay" },
+            { "id": 33, "stage": "Group Stage", "group": "Group F", "date": "2026-06-20", "time": "18:00:00", "home": "Netherlands", "hScore": 5, "aScore": 1, "away": "Sweden" },
+            { "id": 34, "stage": "Group Stage", "group": "Group E", "date": "2026-06-20", "time": "21:00:00", "home": "Germany", "hScore": 2, "aScore": 1, "away": "Ivory Coast" },
+            { "id": 35, "stage": "Group Stage", "group": "Group E", "date": "2026-06-21", "time": "01:00:00", "home": "Ecuador", "hScore": 0, "aScore": 0, "away": "Curacao" },
+            { "id": 37, "stage": "Group Stage", "group": "Group H", "date": "2026-06-21", "time": "17:00:00", "home": "Spain", "hScore": 4, "aScore": 0, "away": "Saudi Arabia" },
+            { "id": 38, "stage": "Group Stage", "group": "Group G", "date": "2026-06-21", "time": "20:00:00", "home": "Belgium", "hScore": 0, "aScore": 0, "away": "Iran" },
+            { "id": 39, "stage": "Group Stage", "group": "Group H", "date": "2026-06-21", "time": "23:00:00", "home": "Uruguay", "hScore": 2, "aScore": 2, "away": "Cape Verde" },
+            { "id": 36, "stage": "Group Stage", "group": "Group F", "date": "2026-06-21", "time": "04:59:00", "home": "Tunisia", "hScore": 0, "aScore": 4, "away": "Japan" },
+            { "id": 40, "stage": "Group Stage", "group": "Group G", "date": "2026-06-22", "time": "02:00:00", "home": "New Zealand", "hScore": 1, "aScore": 3, "away": "Egypt" },
+            { "id": 41, "stage": "Group Stage", "group": "Group J", "date": "2026-06-22", "time": "18:00:00", "home": "Argentina", "hScore": 2, "aScore": 0, "away": "Austria" },
+            { "id": 42, "stage": "Group Stage", "group": "Group I", "date": "2026-06-22", "time": "22:00:00", "home": "France", "hScore": 3, "aScore": 0, "away": "Iraq" },
+            { "id": 43, "stage": "Group Stage", "group": "Group I", "date": "2026-06-23", "time": "01:00:00", "home": "Norway", "hScore": 3, "aScore": 2, "away": "Senegal" },
+            { "id": 44, "stage": "Group Stage", "group": "Group J", "date": "2026-06-23", "time": "04:00:00", "home": "Jordan", "hScore": 1, "aScore": 2, "away": "Algeria" },
+            { "id": 45, "stage": "Group Stage", "group": "Group K", "date": "2026-06-23", "time": "18:00:00", "home": "Portugal", "hScore": 5, "aScore": 0, "away": "Uzbekistan" },
+            { "id": 46, "stage": "Group Stage", "group": "Group L", "date": "2026-06-23", "time": "21:00:00", "home": "England", "hScore": 0, "aScore": 0, "away": "Ghana" },
+            { "id": 47, "stage": "Group Stage", "group": "Group L", "date": "2026-06-24", "time": "00:00:00", "home": "Panama", "hScore": 0, "aScore": 1, "away": "Croatia" },
+            { "id": 48, "stage": "Group Stage", "group": "Group K", "date": "2026-06-24", "time": "03:00:00", "home": "Colombia", "hScore": 1, "aScore": 0, "away": "DR Congo" },
+            { "id": 49, "stage": "Group Stage", "group": "Group B", "date": "2026-06-24", "time": "20:00:00", "home": "Switzerland", "hScore": 2, "aScore": 1, "away": "Canada" },
+            { "id": 50, "stage": "Group Stage", "group": "Group B", "date": "2026-06-24", "time": "20:00:00", "home": "Bosnia & Herz.", "hScore": 3, "aScore": 1, "away": "Qatar" },
+            { "id": 51, "stage": "Group Stage", "group": "Group C", "date": "2026-06-24", "time": "23:00:00", "home": "Scotland", "hScore": 0, "aScore": 3, "away": "Brazil" },
+            { "id": 52, "stage": "Group Stage", "group": "Group C", "date": "2026-06-24", "time": "23:00:00", "home": "Morocco", "hScore": 4, "aScore": 2, "away": "Haiti" },
+            { "id": 53, "stage": "Group Stage", "group": "Group A", "date": "2026-06-25", "time": "02:00:00", "home": "Czechia", "hScore": 0, "aScore": 3, "away": "Mexico" },
+            { "id": 54, "stage": "Group Stage", "group": "Group A", "date": "2026-06-25", "time": "02:00:00", "home": "South Africa", "hScore": 1, "aScore": 0, "away": "South Korea" },
+            { "id": 55, "stage": "Group Stage", "group": "Group E", "date": "2026-06-25", "time": "21:00:00", "home": "Curacao", "hScore": 0, "aScore": 2, "away": "Ivory Coast" },
+            { "id": 56, "stage": "Group Stage", "group": "Group E", "date": "2026-06-25", "time": "21:00:00", "home": "Ecuador", "hScore": 2, "aScore": 1, "away": "Germany" },
+            { "id": 57, "stage": "Group Stage", "group": "Group F", "date": "2026-06-26", "time": "00:00:00", "home": "Japan", "hScore": 1, "aScore": 1, "away": "Sweden" },
+            { "id": 58, "stage": "Group Stage", "group": "Group F", "date": "2026-06-26", "time": "00:00:00", "home": "Tunisia", "hScore": 1, "aScore": 3, "away": "Netherlands" },
+            { "id": 59, "stage": "Group Stage", "group": "Group D", "date": "2026-06-26", "time": "03:00:00", "home": "Turkey", "hScore": 3, "aScore": 2, "away": "United States" },
+            { "id": 60, "stage": "Group Stage", "group": "Group D", "date": "2026-06-26", "time": "03:00:00", "home": "Paraguay", "hScore": 0, "aScore": 0, "away": "Australia" },
+            { "id": 61, "stage": "Group Stage", "group": "Group I", "date": "2026-06-26", "time": "20:00:00", "home": "Norway", "hScore": 1, "aScore": 4, "away": "France" },
+            { "id": 62, "stage": "Group Stage", "group": "Group I", "date": "2026-06-26", "time": "20:00:00", "home": "Senegal", "hScore": 5, "aScore": 0, "away": "Iraq" },
+            { "id": 63, "stage": "Group Stage", "group": "Group H", "date": "2026-06-27", "time": "01:00:00", "home": "Cape Verde", "hScore": 0, "aScore": 0, "away": "Saudi Arabia" },
+            { "id": 64, "stage": "Group Stage", "group": "Group H", "date": "2026-06-27", "time": "01:00:00", "home": "Uruguay", "hScore": 0, "aScore": 1, "away": "Spain" },
+            { "id": 65, "stage": "Group Stage", "group": "Group G", "date": "2026-06-27", "time": "04:00:00", "home": "Egypt", "hScore": 1, "aScore": 1, "away": "Iran" },
+            { "id": 66, "stage": "Group Stage", "group": "Group G", "date": "2026-06-27", "time": "04:00:00", "home": "New Zealand", "hScore": 1, "aScore": 5, "away": "Belgium" },
+            { "id": 67, "stage": "Group Stage", "group": "Group L", "date": "2026-06-27", "time": "22:00:00", "home": "Panama", "hScore": 0, "aScore": 2, "away": "England" },
+            { "id": 68, "stage": "Group Stage", "group": "Group L", "date": "2026-06-27", "time": "22:00:00", "home": "Croatia", "hScore": 2, "aScore": 1, "away": "Ghana" },
+            { "id": 69, "stage": "Group Stage", "group": "Group K", "date": "2026-06-28", "time": "00:30:00", "home": "Colombia", "hScore": 0, "aScore": 0, "away": "Portugal" },
+            { "id": 70, "stage": "Group Stage", "group": "Group K", "date": "2026-06-28", "time": "00:30:00", "home": "DR Congo", "hScore": 3, "aScore": 1, "away": "Uzbekistan" },
+            { "id": 71, "stage": "Group Stage", "group": "Group J", "date": "2026-06-28", "time": "03:00:00", "home": "Algeria", "hScore": 3, "aScore": 3, "away": "Austria" },
+            { "id": 72, "stage": "Group Stage", "group": "Group J", "date": "2026-06-28", "time": "03:00:00", "home": "Jordan", "hScore": 1, "aScore": 3, "away": "Argentina" }
+        ];
+
+        // Round of 32 Matches (IDs 101 to 116) as shown in Screenshot_20260628_114200_WhatsApp.jpg
+        const baseKnockoutMatches = [
+            // Left Bracket Round of 32
+            { "id": 101, "stage": "Round of 32", "group": "Left-1", "date": "2026-06-29", "time": "18:00:00", "location": "Boston", "home": "Germany", "hScore": null, "aScore": null, "away": "Paraguay" },
+            { "id": 102, "stage": "Round of 32", "group": "Left-1", "date": "2026-06-30", "time": "18:00:00", "location": "New York", "home": "France", "hScore": null, "aScore": null, "away": "Sweden" },
+            { "id": 103, "stage": "Round of 32", "group": "Left-2", "date": "2026-06-28", "time": "21:00:00", "location": "Los Angeles", "home": "South Africa", "hScore": null, "aScore": null, "away": "Canada" },
+            { "id": 104, "stage": "Round of 32", "group": "Left-2", "date": "2026-06-29", "time": "21:00:00", "location": "Monterrey", "home": "Netherlands", "hScore": null, "aScore": null, "away": "Morocco" },
+            { "id": 105, "stage": "Round of 32", "group": "Left-3", "date": "2026-07-02", "time": "18:00:00", "location": "Toronto", "home": "Portugal", "hScore": null, "aScore": null, "away": "Croatia" },
+            { "id": 106, "stage": "Round of 32", "group": "Left-3", "date": "2026-07-02", "time": "21:00:00", "location": "Los Angeles", "home": "Spain", "hScore": null, "aScore": null, "away": "Austria" },
+            { "id": 107, "stage": "Round of 32", "group": "Left-4", "date": "2026-07-01", "time": "18:00:00", "location": "San Francisco", "home": "United States", "hScore": null, "aScore": null, "away": "Bosnia & Herz." },
+            { "id": 108, "stage": "Round of 32", "group": "Left-4", "date": "2026-07-01", "time": "21:00:00", "location": "Seattle", "home": "Belgium", "hScore": null, "aScore": null, "away": "Senegal" },
+
+            // Right Bracket Round of 32
+            { "id": 109, "stage": "Round of 32", "group": "Right-1", "date": "2026-06-29", "time": "18:00:00", "location": "Houston", "home": "Brazil", "hScore": null, "aScore": null, "away": "Japan" },
+            { "id": 110, "stage": "Round of 32", "group": "Right-1", "date": "2026-06-30", "time": "18:00:00", "location": "Dallas", "home": "Ivory Coast", "hScore": null, "aScore": null, "away": "Norway" },
+            { "id": 111, "stage": "Round of 32", "group": "Right-2", "date": "2026-06-30", "time": "21:00:00", "location": "Mexico City", "home": "Mexico", "hScore": null, "aScore": null, "away": "Ecuador" },
+            { "id": 112, "stage": "Round of 32", "group": "Right-2", "date": "2026-07-01", "time": "21:00:00", "location": "Atlanta", "home": "England", "hScore": null, "aScore": null, "away": "DR Congo" },
+            { "id": 113, "stage": "Round of 32", "group": "Right-3", "date": "2026-07-03", "time": "18:00:00", "location": "Miami", "home": "Argentina", "hScore": null, "aScore": null, "away": "Cape Verde" },
+            { "id": 114, "stage": "Round of 32", "group": "Right-3", "date": "2026-07-03", "time": "21:00:00", "location": "Dallas", "home": "Australia", "hScore": null, "aScore": null, "away": "Egypt" },
+            { "id": 115, "stage": "Round of 32", "group": "Right-4", "date": "2026-07-02", "time": "18:00:00", "location": "Vancouver", "home": "Switzerland", "hScore": null, "aScore": null, "away": "Algeria" },
+            { "id": 116, "stage": "Round of 32", "group": "Right-4", "date": "2026-07-03", "time": "21:00:00", "location": "Kansas City", "home": "Colombia", "hScore": null, "aScore": null, "away": "Ghana" }
+        ];
+
+        // Higher Knockout rounds mapped step-by-step
+        const advancedKnockoutsTemplate = [
+            // Round of 16 (IDs 201 to 208)
+            { "id": 201, "stage": "Round of 16", "location": "Philadelphia", "date": "2026-07-04", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [101, 102] },
+            { "id": 202, "stage": "Round of 16", "location": "Houston", "date": "2026-07-04", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [103, 104] },
+            { "id": 203, "stage": "Round of 16", "location": "Dallas", "date": "2026-07-06", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [105, 106] },
+            { "id": 204, "stage": "Round of 16", "location": "Seattle", "date": "2026-07-06", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [107, 108] },
+            { "id": 205, "stage": "Round of 16", "location": "New York", "date": "2026-07-05", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [109, 110] },
+            { "id": 206, "stage": "Round of 16", "location": "Mexico City", "date": "2026-07-05", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [111, 112] },
+            { "id": 207, "stage": "Round of 16", "location": "Atlanta", "date": "2026-07-07", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [113, 114] },
+            { "id": 208, "stage": "Round of 16", "location": "Vancouver", "date": "2026-07-07", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [115, 116] },
+
+            // Quarterfinals (IDs 301 to 304)
+            { "id": 301, "stage": "Quarter-finals", "location": "Boston", "date": "2026-07-09", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [201, 202] },
+            { "id": 302, "stage": "Quarter-finals", "location": "Los Angeles", "date": "2026-07-10", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [203, 204] },
+            { "id": 303, "stage": "Quarter-finals", "location": "Miami", "date": "2026-07-11", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [205, 206] },
+            { "id": 304, "stage": "Quarter-finals", "location": "Kansas City", "date": "2026-07-11", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [207, 208] },
+
+            // Semifinals (IDs 401 to 402)
+            { "id": 401, "stage": "Semifinal", "location": "Dallas", "date": "2026-07-14", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [301, 302] },
+            { "id": 402, "stage": "Semifinal", "location": "Atlanta", "date": "2026-07-15", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [303, 304] },
+
+            // Final (ID 501)
+            { "id": 501, "stage": "Grand Final", "location": "New York", "date": "2026-07-19", "home": "", "away": "", "hScore": null, "aScore": null, "sourceMatches": [401, 402] }
+        ];
+
+        let rawMatches = [];
+
+        // Dynamic State Loader from LocalStorage
+        function loadState() {
+            const saved = localStorage.getItem('family_worldcup_matches');
+            if (saved) {
+                rawMatches = JSON.parse(saved);
+            } else {
+                rawMatches = [...baseGroupMatches, ...baseKnockoutMatches, ...advancedKnockoutsTemplate];
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('family_worldcup_matches', JSON.stringify(rawMatches));
+        }
+
+        function resetToDefaults() {
+            if (confirm("Are you sure you want to reset all recorded scores to their default values?")) {
+                localStorage.removeItem('family_worldcup_matches');
+                loadState();
+                calculateTournament();
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Clean name standardiser
+        function cleanTeamName(name) {
+            return name ? name.trim() : '';
+        }
+
+        function formatDateDisplay(dateStr) {
+            try {
+                const parts = dateStr.split('-');
+                if(parts.length !== 3) return dateStr;
+                const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                return dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+            } catch(e) { return dateStr; }
+        }
+
+        // Handle dynamically inputting scores
+        function updateScore(matchId, isHome, value) {
+            const parsedVal = value.trim() === "" ? null : parseInt(value);
+            const mIdx = rawMatches.findIndex(m => m.id === matchId);
+            if (mIdx !== -1) {
+                if (isHome) {
+                    rawMatches[mIdx].hScore = parsedVal;
+                } else {
+                    rawMatches[mIdx].aScore = parsedVal;
+                }
+                saveState();
+                calculateTournament();
+            }
+        }
+
+        // Advance knockout winners to future round nodes dynamically
+        function runProgressionEngine() {
+            rawMatches.forEach(m => {
+                if (m.id >= 200) {
+                    m.home = "";
+                    m.away = "";
+                }
+            });
+
+            // Iterate and bubble up round winners
+            rawMatches.forEach(m => {
+                if (m.hScore !== null && m.aScore !== null) {
+                    const winner = m.hScore > m.aScore ? m.home : (m.aScore > m.hScore ? m.away : "");
+                    if (!winner) return; // Wait for clean win in knockouts
+
+                    // Find where this match acts as a source
+                    rawMatches.forEach(nextMatch => {
+                        if (nextMatch.sourceMatches && nextMatch.sourceMatches.includes(m.id)) {
+                            const position = nextMatch.sourceMatches.indexOf(m.id);
+                            if (position === 0) {
+                                nextMatch.home = winner;
+                            } else {
+                                nextMatch.away = winner;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function calculateTournament() {
+            loadState();
+            runProgressionEngine();
+            saveState();
+
+            let memberPoints = {};
+            let groupStandings = {};
+            let masterTeamsStats = {};
+            let nextMatchTracker = {};
+            let latestResultTracker = {};
+
+            // Initialize standings
+            Object.values(familyAllocations).forEach(name => {
+                memberPoints[name] = 0;
+                nextMatchTracker[name] = null;
+                latestResultTracker[name] = null;
+            });
+
+            Object.keys(familyAllocations).forEach(tName => {
+                masterTeamsStats[tName] = { name: tName, group: "", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 };
+            });
+
+            // 1. Group Stage Tables calculation
+            rawMatches.forEach(m => {
+                let hClean = cleanTeamName(m.home);
+                let aClean = cleanTeamName(m.away);
+                if (m.stage === "Group Stage") {
+                    if (!groupStandings[m.group]) groupStandings[m.group] = {};
+                    [hClean, aClean].forEach(t => {
+                        if (masterTeamsStats[t]) {
+                            masterTeamsStats[t].group = m.group;
+                            groupStandings[m.group][t] = masterTeamsStats[t];
+                        }
+                    });
+                }
+            });
+
+            // 2. Point Allocations based on Match results
+            rawMatches.forEach(m => {
+                let hClean = cleanTeamName(m.home);
+                let aClean = cleanTeamName(m.away);
+                if (!hClean || !aClean) return;
+
+                let flagH = teamFlags[hClean] || "";
+                let flagA = teamFlags[aClean] || "";
+
+                if (m.hScore === null && m.aScore === null) {
+                    let ownerHome = familyAllocations[hClean];
+                    let ownerAway = familyAllocations[aClean];
+
+                    if (ownerHome && !nextMatchTracker[ownerHome]) {
+                        nextMatchTracker[ownerHome] = { label: `${flagH} ${hClean} vs ${flagA} ${aClean}`, dateStr: formatDateDisplay(m.date), timeStr: m.time.substring(0,5) };
+                    }
+                    if (ownerAway && !nextMatchTracker[ownerAway]) {
+                        nextMatchTracker[ownerAway] = { label: `${flagA} ${aClean} vs ${flagH} ${hClean}`, dateStr: formatDateDisplay(m.date), timeStr: m.time.substring(0,5) };
+                    }
+                }
+
+                if (m.hScore !== null && m.aScore !== null) {
+                    let ownerHome = familyAllocations[hClean] || "Unassigned";
+                    let ownerAway = familyAllocations[aClean] || "Unassigned";
+
+                    // Handle Group Stats logic
+                    if (m.stage === "Group Stage" && masterTeamsStats[hClean] && masterTeamsStats[aClean]) {
+                        masterTeamsStats[hClean].p++;
+                        masterTeamsStats[aClean].p++;
+                        masterTeamsStats[hClean].gf += m.hScore;
+                        masterTeamsStats[hClean].ga += m.aScore;
+                        masterTeamsStats[aClean].gf += m.aScore;
+                        masterTeamsStats[aClean].ga += m.hScore;
+
+                        if (m.hScore > m.aScore) {
+                            masterTeamsStats[hClean].w++; masterTeamsStats[hClean].pts += 3;
+                            masterTeamsStats[aClean].l++;
+                        } else if (m.aScore > m.hScore) {
+                            masterTeamsStats[aClean].w++; masterTeamsStats[aClean].pts += 3;
+                            masterTeamsStats[hClean].l++;
+                        } else {
+                            masterTeamsStats[hClean].d++; masterTeamsStats[hClean].pts += 1;
+                            masterTeamsStats[aClean].d++; masterTeamsStats[aClean].pts += 1;
+                        }
+                        masterTeamsStats[hClean].gd = masterTeamsStats[hClean].gf - masterTeamsStats[hClean].ga;
+                        masterTeamsStats[aClean].gd = masterTeamsStats[aClean].gf - masterTeamsStats[aClean].ga;
+                    }
+
+                    // POINT SYSTEM: Win yields points to the winning family member
+                    let pointsToAward = 3; 
+                    if (m.stage === "Round of 32") pointsToAward = 4; // Higher rounds worth slightly more points!
+                    if (m.stage === "Round of 16") pointsToAward = 5;
+                    if (m.stage === "Quarter-finals") pointsToAward = 6;
+                    if (m.stage === "Semifinal") pointsToAward = 8;
+                    if (m.stage === "Grand Final") pointsToAward = 10;
+
+                    if (m.hScore > m.aScore) {
+                        if (familyAllocations[hClean]) memberPoints[familyAllocations[hClean]] += pointsToAward;
+                    } else if (m.aScore > m.hScore) {
+                        if (familyAllocations[aClean]) memberPoints[familyAllocations[aClean]] += pointsToAward;
+                    } else {
+                        // Ties only award points in group stage
+                        if (m.stage === "Group Stage") {
+                            if (familyAllocations[hClean]) memberPoints[familyAllocations[hClean]] += 1;
+                            if (familyAllocations[aClean]) memberPoints[familyAllocations[aClean]] += 1;
+                        }
+                    }
+
+                    let summaryText = `${flagH} ${m.hScore} - ${m.aScore} ${flagA}`;
+                    if (familyAllocations[hClean]) latestResultTracker[familyAllocations[hClean]] = summaryText;
+                    if (familyAllocations[aClean]) latestResultTracker[familyAllocations[aClean]] = summaryText;
+                }
+            });
+
+            renderLeaderboard(memberPoints, nextMatchTracker, latestResultTracker);
+            renderGroupTables(groupStandings);
+            renderBracket();
+            renderTimeline();
+        }
+
+        function renderLeaderboard(memberPoints, nextMatchTracker, latestResultTracker) {
+            const leaderboardTbody = document.getElementById('leaderboard-tbody');
+            leaderboardTbody.innerHTML = '';
+            
+            const sortedLeaderboard = Object.entries(memberPoints).sort((a,b) => b[1] - a[1]);
+            const personToTeamsMap = {};
+            Object.entries(familyAllocations).forEach(([team, person]) => {
+                if (!personToTeamsMap[person]) personToTeamsMap[person] = [];
+                personToTeamsMap[person].push(team);
+            });
+
+            sortedLeaderboard.forEach(([name, pts], index) => {
+                let badgesHtml = (personToTeamsMap[name] || []).map(t => `<span class="team-badge">${teamFlags[t] || ''} ${t}</span>`).join('');
+                
+                let nextMatchHtml = nextMatchTracker[name] 
+                    ? `<div class="info-box next-match-box">⏭️ Next: ${nextMatchTracker[name].label} (${nextMatchTracker[name].dateStr} ${nextMatchTracker[name].timeStr})</div>` 
+                    : '';
+                let latestResultHtml = latestResultTracker[name] 
+                    ? `<div class="info-box latest-result-box">🏁 Last: ${latestResultTracker[name]}</div>` 
+                    : '';
+
+                leaderboardTbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: var(--text-muted); font-size: 1.1rem;">#${index + 1}</td>
+                        <td>
+                            <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">${name}</div>
+                            <div class="teams-badge-container">${badgesHtml}</div>
+                            <div>${latestResultHtml}${nextMatchHtml}</div>
+                        </td>
+                        <td class="points-cell" style="font-size: 1.3rem; text-align: right; vertical-align: middle;">${pts} pts</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderGroupTables(groupStandings) {
+            const groupsContainer = document.getElementById('groups-container');
+            groupsContainer.innerHTML = '';
+
+            Object.keys(groupStandings).sort().forEach(gName => {
+                let teamsInGroup = Object.values(groupStandings[gName]);
+                teamsInGroup.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+
+                let tableRows = teamsInGroup.map(t => {
+                    const owner = familyAllocations[t.name] || 'Unassigned';
+                    return `
+                        <tr>
+                            <td>${teamFlags[t.name] || ''} ${t.name} <span style="font-size: 0.75rem; color: var(--text-muted);">(${owner})</span></td>
+                            <td style="text-align: center;">${t.p}</td>
+                            <td style="text-align: center; font-weight: bold; color: var(--accent-orange);">${t.pts}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                groupsContainer.innerHTML += `
+                    <div class="group-container">
+                        <div class="group-header">📍 ${gName}</div>
+                        <table class="group-table">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th style="text-align: center; width: 30px;">P</th>
+                                    <th style="text-align: center; width: 30px;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                `;
+            });
+        }
+
+        // Render standard Matchbox template inside Bracket Nodes
+        function getMatchboxHtml(m) {
+            const hClean = cleanTeamName(m.home);
+            const aClean = cleanTeamName(m.away);
+            const hOwner = hClean ? (familyAllocations[hClean] || "Free") : "-";
+            const aOwner = aClean ? (familyAllocations[aClean] || "Free") : "-";
+            const hFlag = hClean ? (teamFlags[hClean] || "") : "🏳️";
+            const aFlag = aClean ? (teamFlags[aClean] || "") : "🏳️";
+
+            const hScoreVal = m.hScore !== null ? m.hScore : "";
+            const aScoreVal = m.aScore !== null ? m.aScore : "";
+
+            return `
+                <div class="bracket-match-info">
+                    <span>${m.location || 'Stadium'}</span>
+                    <span>${formatDateDisplay(m.date)}</span>
+                </div>
+                <div class="bracket-team-line">
+                    <span class="bracket-team-name">
+                        <span>${hFlag}</span>
+                        <strong style="color:${hClean ? '#fff':'#475569'};">${hClean || 'TBD'}</strong>
+                        <span class="bracket-owner">(${hOwner})</span>
+                    </span>
+                    <input class="score-input" type="number" min="0" placeholder="-" 
+                        value="${hScoreVal}" onchange="updateScore(${m.id}, true, this.value)">
+                </div>
+                <div class="bracket-team-line">
+                    <span class="bracket-team-name">
+                        <span>${aFlag}</span>
+                        <strong style="color:${aClean ? '#fff':'#475569'};">${aClean || 'TBD'}</strong>
+                        <span class="bracket-owner">(${aOwner})</span>
+                    </span>
+                    <input class="score-input" type="number" min="0" placeholder="-" 
+                        value="${aScoreVal}" onchange="updateScore(${m.id}, false, this.value)">
+                </div>
+            `;
+        }
+
+        function renderBracket() {
+            // Render 16 initial nodes
+            for (let i = 1; i <= 16; i++) {
+                const m = rawMatches.find(x => x.id === (100 + i));
+                if (m) document.getElementById(`b-match-${i}`).innerHTML = getMatchboxHtml(m);
+            }
+
+            // Render Round of 16 Nodes
+            for (let i = 1; i <= 8; i++) {
+                const m = rawMatches.find(x => x.id === (200 + i));
+                if (m) document.getElementById(`b-r16-${i}`).innerHTML = getMatchboxHtml(m);
+            }
+
+            // Render Quarterfinal Nodes
+            for (let i = 1; i <= 4; i++) {
+                const m = rawMatches.find(x => x.id === (300 + i));
+                if (m) document.getElementById(`b-qf-${i}`).innerHTML = getMatchboxHtml(m);
+            }
+
+            // Semifinals
+            const sf1 = rawMatches.find(x => x.id === 401);
+            const sf2 = rawMatches.find(x => x.id === 402);
+            if (sf1) document.getElementById('b-sf-1').innerHTML = getMatchboxHtml(sf1);
+            if (sf2) document.getElementById('b-sf-2').innerHTML = getMatchboxHtml(sf2);
+
+            // Final Match
+            const finalM = rawMatches.find(x => x.id === 501);
+            if (finalM) {
+                document.getElementById('b-final').innerHTML = getMatchboxHtml(finalM);
+                
+                // Determine Champion
+                if (finalM.hScore !== null && finalM.aScore !== null && finalM.hScore !== finalM.aScore) {
+                    const winner = finalM.hScore > finalM.aScore ? finalM.home : finalM.away;
+                    const flag = teamFlags[winner] || "";
+                    document.getElementById('champ-team-name').innerHTML = `${flag} ${winner}`;
+                    document.getElementById('champ-owner-name').innerHTML = `Owned by: ${familyAllocations[winner] || 'Free'}`;
+                } else {
+                    document.getElementById('champ-team-name').innerHTML = "Pending Finals...";
+                    document.getElementById('champ-owner-name').innerHTML = "-";
+                }
+            }
+        }
+
+        function renderTimeline() {
+            const matchesContainer = document.getElementById('matches-container');
+            matchesContainer.innerHTML = '';
+
+            let sortedTimelineMatches = [...rawMatches].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+            sortedTimelineMatches.forEach(m => {
+                let hClean = cleanTeamName(m.home);
+                let aClean = cleanTeamName(m.away);
+                let flagH = teamFlags[hClean] || "";
+                let flagA = teamFlags[aClean] || "";
+                let hOwner = hClean ? (familyAllocations[hClean] || "Free") : "-";
+                let aOwner = aClean ? (familyAllocations[aClean] || "Free") : "-";
+
+                let hScoreDisp = m.hScore !== null ? m.hScore : '';
+                let aScoreDisp = m.aScore !== null ? m.aScore : '';
+
+                matchesContainer.innerHTML += `
+                    <div class="match-row" style="${m.id >= 100 ? 'border-left: 3px solid var(--accent-orange);' : ''}">
+                        <div class="match-meta">
+                            <div style="font-weight: bold; color: var(--accent-blue);">${formatDateDisplay(m.date)}</div>
+                            <div style="font-size: 0.75rem;">${m.time ? m.time.substring(0,5) : ''}</div>
+                            <div style="font-size: 0.7rem; color: var(--accent-orange); text-transform: uppercase;">${m.stage}</div>
+                        </div>
+                        <div class="match-team-block">
+                            <div class="m-team-line">
+                                <span>${flagH} <strong>${hClean || 'TBD'}</strong> <span style="font-size:0.75rem; color: var(--text-muted);">(${hOwner})</span></span>
+                                <input class="score-input" type="number" min="0" placeholder="-" 
+                                    value="${hScoreDisp}" onchange="updateScore(${m.id}, true, this.value)">
+                            </div>
+                            <div class="m-team-line">
+                                <span>${flagA} <strong>${aClean || 'TBD'}</strong> <span style="font-size:0.75rem; color: var(--text-muted);">(${aOwner})</span></span>
+                                <input class="score-input" type="number" min="0" placeholder="-" 
+                                    value="${aScoreDisp}" onchange="updateScore(${m.id}, false, this.value)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateTournament();
+        });
+    </script>
+</body>
+</html>
